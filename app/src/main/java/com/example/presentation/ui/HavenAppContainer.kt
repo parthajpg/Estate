@@ -1,8 +1,22 @@
 package com.example.presentation.ui
 
 import android.widget.Toast
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import com.example.presentation.ui.components.YohesBlueDark
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.AccountBalance
@@ -14,6 +28,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -49,6 +64,12 @@ import com.example.presentation.viewmodel.MainViewModel
 import com.example.ui.theme.ChampagneGold
 import com.example.ui.theme.SlateDark
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HavenAppContainer(
@@ -61,6 +82,7 @@ fun HavenAppContainer(
 
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val contactSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showRoleDialog by remember { mutableStateOf(false) }
 
     // Handle Toast alerts
     LaunchedEffect(uiState.inquirySuccessToast) {
@@ -76,22 +98,31 @@ fun HavenAppContainer(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            if (currentRoute != NavRoute.PropertyDetail.route &&
+            if (currentRoute != NavRoute.Search.route &&
+                currentRoute != NavRoute.PropertyDetail.route &&
                 currentRoute != NavRoute.PostProperty.route &&
                 currentRoute != NavRoute.OwnerDashboard.route &&
                 currentRoute != NavRoute.DealerConsole.route
             ) {
-                UserRoleSelector(
-                    selectedRole = uiState.selectedUserRole,
-                    onRoleSelected = { role ->
-                        mainViewModel.setUserRole(role)
-                        when (role) {
-                            UserRole.BUYER_TENANT -> navController.navigate(NavRoute.Search.route)
-                            UserRole.INDIVIDUAL_OWNER -> navController.navigate(NavRoute.OwnerDashboard.route)
-                            UserRole.BROKER_DEALER -> navController.navigate(NavRoute.DealerConsole.route)
+                Surface(
+                    color = Color.White,
+                    tonalElevation = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                ) {
+                    UserRoleSelector(
+                        selectedRole = uiState.selectedUserRole,
+                        onRoleSelected = { role ->
+                            mainViewModel.setUserRole(role)
+                            when (role) {
+                                UserRole.BUYER_TENANT -> navController.navigate(NavRoute.Search.route)
+                                UserRole.INDIVIDUAL_OWNER -> navController.navigate(NavRoute.OwnerDashboard.route)
+                                UserRole.BROKER_DEALER -> navController.navigate(NavRoute.DealerConsole.route)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         },
         bottomBar = {
@@ -99,7 +130,8 @@ fun HavenAppContainer(
             if (currentRoute != NavRoute.PropertyDetail.route && currentRoute != NavRoute.PostProperty.route) {
                 NavigationBar(
                     containerColor = Color.White,
-                    tonalElevation = 4.dp
+                    tonalElevation = 4.dp,
+                    modifier = Modifier.navigationBarsPadding()
                 ) {
                     NavigationBarItem(
                         selected = currentRoute == NavRoute.Search.route || currentRoute == null,
@@ -188,7 +220,23 @@ fun HavenAppContainer(
         NavHost(
             navController = navController,
             startDestination = NavRoute.Search.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = {
+                fadeIn(animationSpec = tween(280)) + slideInVertically(
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                ) { fullHeight -> fullHeight / 10 }
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(220))
+            },
+            popEnterTransition = {
+                fadeIn(animationSpec = tween(280))
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(220)) + slideOutVertically(
+                    animationSpec = tween(220)
+                ) { fullHeight -> fullHeight / 10 }
+            }
         ) {
             composable(NavRoute.Search.route) {
                 SearchMapListScreen(
@@ -197,9 +245,7 @@ fun HavenAppContainer(
                     onCategoryTabSelected = mainViewModel::onCategoryTabSelected,
                     onCitySelected = mainViewModel::onCitySelected,
                     onVerifiedOnlyToggled = mainViewModel::onVerifiedOnlyToggled,
-                    onSearchModeChanged = mainViewModel::setSearchMode,
                     onOpenFilterSheet = { mainViewModel.setFilterSheetOpen(true) },
-                    onSelectMapProperty = mainViewModel::selectMapProperty,
                     onOpenPropertyDetail = { prop ->
                         mainViewModel.openPropertyDetail(prop)
                         navController.navigate(NavRoute.PropertyDetail.route)
@@ -207,7 +253,10 @@ fun HavenAppContainer(
                     onToggleFavorite = mainViewModel::toggleFavorite,
                     onContactAgentClick = { prop ->
                         mainViewModel.openContactSheet(prop)
-                    }
+                    },
+                    onOpenRoleSelector = { showRoleDialog = true },
+                    onOpenPostProperty = { navController.navigate(NavRoute.PostProperty.route) },
+                    onOpenDealerConsole = { navController.navigate(NavRoute.DealerConsole.route) }
                 )
             }
 
@@ -339,6 +388,48 @@ fun HavenAppContainer(
                 onDismiss = { mainViewModel.closeContactSheet() },
                 onSubmitInquiry = mainViewModel::submitInquiry,
                 sheetState = contactSheetState
+            )
+        }
+
+        // Log In / Role Selection Dialog
+        if (showRoleDialog) {
+            AlertDialog(
+                onDismissRequest = { showRoleDialog = false },
+                title = {
+                    Text(
+                        text = "Select Yohes Portal Mode",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = YohesBlueDark
+                    )
+                },
+                text = {
+                    Column {
+                        Text(
+                            text = "Log in or switch account type to access specialized luxury features.",
+                            fontSize = 13.sp,
+                            color = Color(0xFF64748B)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        UserRoleSelector(
+                            selectedRole = uiState.selectedUserRole,
+                            onRoleSelected = { role ->
+                                mainViewModel.setUserRole(role)
+                                showRoleDialog = false
+                                when (role) {
+                                    UserRole.BUYER_TENANT -> navController.navigate(NavRoute.Search.route)
+                                    UserRole.INDIVIDUAL_OWNER -> navController.navigate(NavRoute.OwnerDashboard.route)
+                                    UserRole.BROKER_DEALER -> navController.navigate(NavRoute.DealerConsole.route)
+                                }
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showRoleDialog = false }) {
+                        Text("Close", color = YohesBlueDark, fontWeight = FontWeight.Bold)
+                    }
+                }
             )
         }
     }

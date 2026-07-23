@@ -3,14 +3,31 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Luxury House Roof & Shield Silhouette -->
+    <!-- Skyscraper towers -->
     <path
-        android:fillColor="#D97706"
-        android:pathData="M54,26 L26,50 L34,50 L34,78 L74,78 L74,50 L82,50 Z" />
+        android:fillColor="#0052D4"
+        android:pathData="M62,20 L76,20 L76,60 L62,60 Z" />
     <path
-        android:fillColor="#FEF3C7"
-        android:pathData="M42,54 L66,54 L66,78 L42,78 Z" />
+        android:fillColor="#1E3E62"
+        android:pathData="M76,28 L88,28 L88,60 L76,60 Z" />
+
+    <!-- Center Roof & Y Structure -->
     <path
-        android:fillColor="#D97706"
-        android:pathData="M51,60 L60,60 L60,78 L51,78 Z" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,48 L54,26 L84,48 L76,53 L54,36 L32,53 Z" />
+
+    <!-- House Body Base Stem -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,48 L64,48 L64,88 L44,88 Z" />
+
+    <!-- Gold Accent Ribbon -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M28,62 L46,50 L46,62 L28,74 Z" />
+
+    <!-- Window Pane -->
+    <path
+        android:fillColor="#0F2C59"
+        android:pathData="M48,54 H53 V59 H48 Z M55,54 H60 V59 H55 Z M48,61 H53 V66 H48 Z M55,61 H60 V66 H55 Z" />
 </vector>

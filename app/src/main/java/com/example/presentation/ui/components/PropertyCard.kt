@@ -1,5 +1,8 @@
 package com.example.presentation.ui.components
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,9 +32,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,12 +74,19 @@ fun PropertyCard(
                 )
 
                 // Favorite Button Overlay
+                val heartScale by animateFloatAsState(
+                    targetValue = if (property.isFavorite) 1.25f else 1.0f,
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+                    label = "heartScale"
+                )
+
                 IconButton(
                     onClick = { onFavoriteToggle(property.id) },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(12.dp)
                         .size(36.dp)
+                        .scale(heartScale)
                         .background(
                             color = Color.Black.copy(alpha = 0.45f),
                             shape = CircleShape

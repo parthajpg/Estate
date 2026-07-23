@@ -1,8 +1,13 @@
 package com.example.presentation.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,44 +30,101 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.domain.model.Property
-import com.example.presentation.ui.components.MapInteractiveCanvas
+import com.example.domain.model.UserRole
 import com.example.presentation.ui.components.PropertyCard
 import com.example.presentation.ui.components.VerifiedBadge
-import com.example.presentation.viewmodel.SearchMode
+import com.example.presentation.ui.components.YohesHeaderLogo
+import com.example.presentation.ui.components.YohesBlueDark
+import com.example.presentation.ui.components.YohesGoldAccent
 import com.example.presentation.viewmodel.UiState
-import com.example.ui.theme.ChampagneGold
 import com.example.ui.theme.SlateDark
 import com.example.ui.theme.TextMuted
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+data class HeroSlide(
+    val imageUrl: String,
+    val headline: String,
+    val subtitle: String,
+    val locationPrice: String,
+    val propertyId: String
+)
+
+val heroSlides = listOf(
+    HeroSlide(
+        imageUrl = "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+        headline = "The World's\nLuxury Marketplace",
+        subtitle = "ONE SEARCH • 830,000+ LISTINGS • 21,000+ TRUSTED SELLERS • 140 COUNTRIES",
+        locationPrice = "APARTMENT IN MILOVIĆI, TIVAT MUNICIPALITY, MONTENEGRO • $4,200,000",
+        propertyId = "p1"
+    ),
+    HeroSlide(
+        imageUrl = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+        headline = "Beverly Hills\nCoastal Haven",
+        subtitle = "EXCLUSIVE PRIVATE ESTATES • SPECTACULAR OCEAN PANORAMAS",
+        locationPrice = "BEVERLY HILLS MODERN OCEAN VILLA, CALIFORNIA • $18,500,000",
+        propertyId = "p2"
+    ),
+    HeroSlide(
+        imageUrl = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+        headline = "Manhattan Sky\nPenthouses",
+        subtitle = "ULTRA-LUXURY RESIDENCES • 360 SKYLINE VIEWS",
+        locationPrice = "MANHATTAN SKYLINE PENTHOUSE, NEW YORK • $24,000,000",
+        propertyId = "p3"
+    ),
+    HeroSlide(
+        imageUrl = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        headline = "Alpine Ski Chalet\nEstates",
+        subtitle = "SKI-IN SKI-OUT SANCTUARIES • ASPEN COLORADO",
+        locationPrice = "ALPINE SKI CHALET, ASPEN COLORADO • $12,800,000",
+        propertyId = "p4"
+    ),
+    HeroSlide(
+        imageUrl = "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80",
+        headline = "Palm Jumeirah\nWaterfront Palace",
+        subtitle = "PRIVATE BEACHFRONT VILLAS • DUBAI UAE",
+        locationPrice = "PALM JUMEIRAH WATERFRONT PALACE, DUBAI • $32,000,000",
+        propertyId = "p5"
+    )
+)
+
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SearchMapListScreen(
     uiState: UiState,
@@ -69,317 +132,447 @@ fun SearchMapListScreen(
     onCategoryTabSelected: (String) -> Unit = {},
     onCitySelected: (String) -> Unit,
     onVerifiedOnlyToggled: (Boolean) -> Unit,
-    onSearchModeChanged: (SearchMode) -> Unit,
     onOpenFilterSheet: () -> Unit,
-    onSelectMapProperty: (Property) -> Unit,
     onOpenPropertyDetail: (Property) -> Unit,
     onToggleFavorite: (String) -> Unit,
     onContactAgentClick: (Property) -> Unit,
+    onOpenRoleSelector: () -> Unit = {},
+    onOpenPostProperty: () -> Unit = {},
+    onOpenDealerConsole: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val popularCities = listOf("All Cities", "Malibu", "New York", "Miami", "Aspen", "London", "Dubai")
-    val categoryTabs = listOf("Buy", "Rent", "Commercial", "New Projects")
+    val categoryTabs = listOf("Real Estate", "Villas", "Penthouses", "Estates", "Rentals", "Journal")
 
-    Column(
+    var currentSlideIndex by remember { mutableIntStateOf(0) }
+
+    // Auto slideshow effect - advances every 4.5 seconds
+    LaunchedEffect(currentSlideIndex) {
+        delay(4500)
+        currentSlideIndex = (currentSlideIndex + 1) % heroSlides.size
+    }
+
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color(0xFFF8FAFC))
     ) {
-        // Top Search Bar & View Mode Controller
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .border(1.dp, MaterialTheme.colorScheme.outline)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+        // JamesEdition Style Top Header Bar
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(YohesBlueDark)
+                    .statusBarsPadding()
             ) {
-                OutlinedTextField(
-                    value = uiState.filterState.query,
-                    onValueChange = onSearchQueryChanged,
-                    placeholder = { Text("Search location, BHK, or agent", color = Color(0xFF64748B), fontSize = 13.sp) },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = Color(0xFF475569))
-                    },
-                    trailingIcon = {
-                        if (uiState.filterState.query.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChanged("") }) {
-                                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear", tint = Color(0xFF475569))
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFF1F5F9),
-                        unfocusedContainerColor = Color(0xFFF1F5F9),
-                        focusedBorderColor = SlateDark,
-                        unfocusedBorderColor = Color(0xFFE2E8F0),
-                        focusedTextColor = SlateDark,
-                        unfocusedTextColor = SlateDark
-                    ),
-                    shape = RoundedCornerShape(50.dp),
-                    modifier = Modifier.weight(1f)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Filter Sheet Button
-                IconButton(
-                    onClick = onOpenFilterSheet,
+                Row(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .border(1.dp, Color(0xFFE2E8F0), CircleShape)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    BadgedBox(
-                        badge = {
-                            if (uiState.filterState.verifiedOnly || uiState.filterState.selectedBhk.isNotEmpty() || uiState.filterState.selectedCity != "All Cities") {
-                                Badge(containerColor = SlateDark)
-                            }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onOpenFilterSheet) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
                         }
+                        YohesHeaderLogo(textColor = Color.White)
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = "Filters",
-                            tint = SlateDark
+                        Text(
+                            text = "Sell With Us",
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable { onOpenPostProperty() }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                         )
+
+                        Text(
+                            text = "For Agents",
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable { onOpenDealerConsole() }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+
+                        // Log In / Sign Up Button
+                        OutlinedButton(
+                            onClick = onOpenRoleSelector,
+                            shape = RoundedCornerShape(50.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.8f)),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                horizontal = 12.dp,
+                                vertical = 4.dp
+                            ),
+                            modifier = Modifier.height(34.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = when (uiState.selectedUserRole) {
+                                    UserRole.BUYER_TENANT -> "Log In / Sign Up"
+                                    UserRole.INDIVIDUAL_OWNER -> "Owner Logged In"
+                                    UserRole.BROKER_DEALER -> "Dealer Logged In"
+                                },
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Category Selection Tabs (Buy, Rent, Commercial, New Projects)
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                items(categoryTabs) { category ->
-                    val isSelected = uiState.filterState.categoryTab.equals(category, ignoreCase = true)
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (isSelected) SlateDark else Color(0xFFF1F5F9))
-                            .clickable { onCategoryTabSelected(category) }
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
+                // JamesEdition Category Row
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF0A1E3F))
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(categoryTabs) { category ->
+                        val isSelected = uiState.filterState.categoryTab.equals(category, ignoreCase = true)
                         Text(
                             text = category,
-                            color = if (isSelected) Color.White else Color(0xFF475569),
                             fontSize = 12.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isSelected) YohesGoldAccent else Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable { onCategoryTabSelected(category) }
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         )
                     }
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(10.dp))
+        // Hero Image Auto-Slideshow Section (JamesEdition Style)
+        item {
+            val slide = heroSlides[currentSlideIndex]
 
-            // City Filter Pills
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(340.dp)
+                    .background(Color.Black)
             ) {
-                items(popularCities) { city ->
-                    val isSelected = uiState.filterState.selectedCity.equals(city, ignoreCase = true)
-                    Box(
+                // Animated Image Background
+                AnimatedContent(
+                    targetState = slide,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(700)) togetherWith fadeOut(animationSpec = tween(700))
+                    },
+                    label = "heroSlide"
+                ) { targetSlide ->
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AsyncImage(
+                            model = targetSlide.imageUrl,
+                            contentDescription = targetSlide.headline,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    val matchedProp = uiState.properties.find { it.id == targetSlide.propertyId }
+                                        ?: uiState.properties.firstOrNull()
+                                    matchedProp?.let { onOpenPropertyDetail(it) }
+                                }
+                        )
+
+                        // Dark Gradient Overlay for Crisp White Text Readability
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black.copy(alpha = 0.35f),
+                                            Color.Black.copy(alpha = 0.15f),
+                                            Color.Black.copy(alpha = 0.85f)
+                                        )
+                                    )
+                                )
+                        )
+                    }
+                }
+
+                // Overlay Headline & Tagline
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = slide.headline,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        fontFamily = FontFamily.Serif,
+                        lineHeight = 34.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = slide.subtitle,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White.copy(alpha = 0.9f),
+                        letterSpacing = 1.sp
+                    )
+                }
+
+                // Left & Right Navigation Arrows
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp, bottom = 40.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(
+                        onClick = {
+                            currentSlideIndex = if (currentSlideIndex > 0) currentSlideIndex - 1 else heroSlides.size - 1
+                        },
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(if (isSelected) SlateDark else Color.White)
-                            .border(
-                                width = if (isSelected) 0.dp else 1.dp,
-                                color = Color(0xFFE2E8F0),
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .clickable { onCitySelected(city) }
-                            .padding(horizontal = 16.dp, vertical = 7.dp)
+                            .size(36.dp)
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
                     ) {
-                        Text(
-                            text = city,
-                            color = if (isSelected) Color.White else Color(0xFF475569),
-                            fontSize = 12.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                        Icon(
+                            imageVector = Icons.Default.ChevronLeft,
+                            contentDescription = "Previous",
+                            tint = Color.White
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            currentSlideIndex = (currentSlideIndex + 1) % heroSlides.size
+                        },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = "Next",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                // Bottom Right Location & Price Caption
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 24.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.Black.copy(alpha = 0.65f))
+                        .clickable {
+                            val matchedProp = uiState.properties.find { it.id == slide.propertyId }
+                                ?: uiState.properties.firstOrNull()
+                            matchedProp?.let { onOpenPropertyDetail(it) }
+                        }
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = slide.locationPrice,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = YohesGoldAccent,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+
+                // Bottom Timer Indicators (Lines showing active slide)
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    heroSlides.indices.forEach { index ->
+                        val isActive = index == currentSlideIndex
+                        val alpha = if (isActive) 1f else 0.35f
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(3.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(Color.White.copy(alpha = alpha))
+                                .clickable { currentSlideIndex = index }
                         )
                     }
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(10.dp))
+        // Search Controls Header
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = uiState.filterState.query,
+                        onValueChange = onSearchQueryChanged,
+                        placeholder = { Text("Search location, mansion, villa or city", color = Color(0xFF64748B), fontSize = 13.sp) },
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = YohesBlueDark)
+                        },
+                        trailingIcon = {
+                            if (uiState.filterState.query.isNotEmpty()) {
+                                IconButton(onClick = { onSearchQueryChanged("") }) {
+                                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear", tint = Color(0xFF475569))
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF1F5F9),
+                            unfocusedContainerColor = Color(0xFFF1F5F9),
+                            focusedBorderColor = YohesBlueDark,
+                            unfocusedBorderColor = Color(0xFFE2E8F0),
+                            focusedTextColor = SlateDark,
+                            unfocusedTextColor = SlateDark
+                        ),
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier.weight(1f)
+                    )
 
-            // Search View Mode Toggle Selector (Split, Map, List)
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconButton(
+                        onClick = onOpenFilterSheet,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .border(1.dp, Color(0xFFE2E8F0), CircleShape)
+                    ) {
+                        BadgedBox(
+                            badge = {
+                                if (uiState.filterState.verifiedOnly || uiState.filterState.selectedBhk.isNotEmpty() || uiState.filterState.selectedCity != "All Cities") {
+                                    Badge(containerColor = YohesBlueDark)
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = "Filters",
+                                tint = YohesBlueDark
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // City Filter Chips
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(popularCities) { city ->
+                        val isSelected = uiState.filterState.selectedCity.equals(city, ignoreCase = true)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(if (isSelected) YohesBlueDark else Color.White)
+                                .border(
+                                    width = if (isSelected) 0.dp else 1.dp,
+                                    color = Color(0xFFE2E8F0),
+                                    shape = RoundedCornerShape(50.dp)
+                                )
+                                .clickable { onCitySelected(city) }
+                                .padding(horizontal = 16.dp, vertical = 7.dp)
+                        ) {
+                            Text(
+                                text = city,
+                                color = if (isSelected) Color.White else Color(0xFF475569),
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Active Listings Count & Quick Verified Toggle Bar
+        item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(50.dp))
-                    .background(Color(0xFFF1F5F9))
-                    .padding(4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                SearchModeOption(
-                    mode = SearchMode.SPLIT,
-                    currentMode = uiState.searchMode,
-                    icon = Icons.Default.ViewAgenda,
-                    label = "Split",
-                    onClick = { onSearchModeChanged(SearchMode.SPLIT) },
-                    modifier = Modifier.weight(1f)
+                Text(
+                    text = "${uiState.properties.size} Exclusive Yohes Listings",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = YohesBlueDark
                 )
 
-                SearchModeOption(
-                    mode = SearchMode.FULL_MAP,
-                    currentMode = uiState.searchMode,
-                    icon = Icons.Default.Map,
-                    label = "Map View",
-                    onClick = { onSearchModeChanged(SearchMode.FULL_MAP) },
-                    modifier = Modifier.weight(1f)
-                )
-
-                SearchModeOption(
-                    mode = SearchMode.FULL_LIST,
-                    currentMode = uiState.searchMode,
-                    icon = Icons.Default.List,
-                    label = "Listings",
-                    onClick = { onSearchModeChanged(SearchMode.FULL_LIST) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        // Active Listings Count & Quick Verified Toggle Ribbon
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "${uiState.properties.size} Verified Luxury Estates",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onVerifiedOnlyToggled(!uiState.filterState.verifiedOnly) }
-            ) {
-                VerifiedBadge(
-                    text = if (uiState.filterState.verifiedOnly) "VERIFIED ONLY ON" else "ALL LISTINGS"
-                )
-            }
-        }
-
-        // Content Area depending on Search Mode
-        when (uiState.searchMode) {
-            SearchMode.SPLIT -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Map Panel (Top 45% height)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.42f)
-                    ) {
-                        MapInteractiveCanvas(
-                            properties = uiState.properties,
-                            selectedProperty = uiState.selectedPropertyForMapPreview,
-                            onPropertySelected = onSelectMapProperty,
-                            onOpenPropertyDetail = onOpenPropertyDetail
-                        )
-                    }
-
-                    // Vertical Property Cards List (Bottom 55% height)
-                    if (uiState.properties.isEmpty()) {
-                        EmptyListState()
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            items(uiState.properties, key = { it.id }) { prop ->
-                                PropertyCard(
-                                    property = prop,
-                                    onPropertyClick = onOpenPropertyDetail,
-                                    onFavoriteToggle = onToggleFavorite,
-                                    onContactAgentClick = onContactAgentClick
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            SearchMode.FULL_MAP -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    MapInteractiveCanvas(
-                        properties = uiState.properties,
-                        selectedProperty = uiState.selectedPropertyForMapPreview,
-                        onPropertySelected = onSelectMapProperty,
-                        onOpenPropertyDetail = onOpenPropertyDetail
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { onVerifiedOnlyToggled(!uiState.filterState.verifiedOnly) }
+                ) {
+                    VerifiedBadge(
+                        text = if (uiState.filterState.verifiedOnly) "VERIFIED ONLY" else "ALL LISTINGS"
                     )
                 }
             }
+        }
 
-            SearchMode.FULL_LIST -> {
-                if (uiState.properties.isEmpty()) {
-                    EmptyListState()
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        items(uiState.properties, key = { it.id }) { prop ->
-                            PropertyCard(
-                                property = prop,
-                                onPropertyClick = onOpenPropertyDetail,
-                                onFavoriteToggle = onToggleFavorite,
-                                onContactAgentClick = onContactAgentClick
-                            )
-                        }
-                    }
+        // Property Cards List
+        if (uiState.properties.isEmpty()) {
+            item {
+                EmptyListState()
+            }
+        } else {
+            items(uiState.properties, key = { it.id }) { prop ->
+                Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+                    PropertyCard(
+                        property = prop,
+                        onPropertyClick = onOpenPropertyDetail,
+                        onFavoriteToggle = onToggleFavorite,
+                        onContactAgentClick = onContactAgentClick
+                    )
                 }
             }
         }
-    }
-}
 
-@Composable
-private fun SearchModeOption(
-    mode: SearchMode,
-    currentMode: SearchMode,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val isSelected = mode == currentMode
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(50.dp))
-            .background(if (isSelected) SlateDark else Color.Transparent)
-            .clickable { onClick() }
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) Color.White else Color(0xFF475569),
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-            color = if (isSelected) Color.White else Color(0xFF475569)
-        )
+        item {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
 
@@ -387,7 +580,7 @@ private fun SearchModeOption(
 private fun EmptyListState() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {

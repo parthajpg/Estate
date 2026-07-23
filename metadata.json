@@ -1,6 +1,6 @@
 {
-  "name": "Haven Estate",
-  "description": "Luxury real estate app combining filtered local search, interactive map view with price tags, verified property badges, edge-to-edge image carousels, and mortgage EMI calculator.",
+  "name": "Yohes",
+  "description": "The World's Luxury Real Estate Marketplace with auto-sliding luxury hero showcases, filtered search, inquiry management, mortgage calculator, and role-based console.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

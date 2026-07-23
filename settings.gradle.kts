@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Haven Estate"
+rootProject.name = "Yohes"
 
 include(":app")

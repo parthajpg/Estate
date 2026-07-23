@@ -248,7 +248,7 @@ class PropertyRepository(private val dao: RealEstateDao) {
                     agent = Agent(
                         name = entity.ownerName,
                         role = entity.ownerType,
-                        agency = "Haven ${entity.ownerType}",
+                        agency = "Yohes ${entity.ownerType}",
                         phone = entity.ownerPhone,
                         whatsappNumber = entity.ownerPhone.replace("+", "").replace(" ", "").replace("-", ""),
                         email = entity.ownerEmail,
