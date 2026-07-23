@@ -105,9 +105,10 @@ fun HavenAppContainer(
                         selected = currentRoute == NavRoute.Search.route || currentRoute == null,
                         onClick = {
                             navController.navigate(NavRoute.Search.route) {
-                                popUpTo(NavRoute.Search.route) { saveState = true }
+                                popUpTo(navController.graph.startDestinationId) {
+                                    inclusive = false
+                                }
                                 launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         icon = { Icon(Icons.Default.Search, contentDescription = "Explore") },
@@ -216,7 +217,11 @@ fun HavenAppContainer(
                     inquiries = uiState.inquiryHistory,
                     onOpenPostProperty = { navController.navigate(NavRoute.PostProperty.route) },
                     onDeleteProperty = mainViewModel::deletePostedProperty,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = {
+                        if (!navController.popBackStack()) {
+                            navController.navigate(NavRoute.Search.route)
+                        }
+                    }
                 )
             }
 
@@ -228,7 +233,11 @@ fun HavenAppContainer(
                         mainViewModel.addWalletCredits(desc, creds, type)
                     },
                     onOpenPostProperty = { navController.navigate(NavRoute.PostProperty.route) },
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = {
+                        if (!navController.popBackStack()) {
+                            navController.navigate(NavRoute.Search.route)
+                        }
+                    }
                 )
             }
 
@@ -260,7 +269,9 @@ fun HavenAppContainer(
                         mortgageCalculation = uiState.mortgageCalculation,
                         onBackClick = {
                             mainViewModel.closePropertyDetail()
-                            navController.popBackStack()
+                            if (!navController.popBackStack()) {
+                                navController.navigate(NavRoute.Search.route)
+                            }
                         },
                         onFavoriteToggle = mainViewModel::toggleFavorite,
                         onContactAgentClick = { p ->

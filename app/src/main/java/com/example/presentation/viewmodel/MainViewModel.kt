@@ -1,6 +1,7 @@
 package com.example.presentation.viewmodel
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.HavenDatabase
@@ -50,8 +51,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = HavenDatabase.getInstance(application)
     private val repository = PropertyRepository(db.dao())
+    private val sharedPreferences = application.getSharedPreferences("haven_user_prefs", Context.MODE_PRIVATE)
 
-    private val _selectedRole = MutableStateFlow(UserRole.BUYER_TENANT)
+    private val _selectedRole = MutableStateFlow(
+        run {
+            val savedRole = sharedPreferences.getString("key_user_role", UserRole.BUYER_TENANT.name)
+            try {
+                UserRole.valueOf(savedRole ?: UserRole.BUYER_TENANT.name)
+            } catch (e: Exception) {
+                UserRole.BUYER_TENANT
+            }
+        }
+    )
     private val _filterState = MutableStateFlow(FilterState())
     private val _searchMode = MutableStateFlow(SearchMode.SPLIT)
     private val _selectedMapProperty = MutableStateFlow<Property?>(null)
@@ -159,6 +170,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setUserRole(role: UserRole) {
         _selectedRole.value = role
+        sharedPreferences.edit().putString("key_user_role", role.name).apply()
     }
 
     fun onCategoryTabSelected(category: String) {
