@@ -6,8 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [FavoriteEntity::class, InquiryEntity::class],
-    version = 1,
+    entities = [
+        FavoriteEntity::class,
+        InquiryEntity::class,
+        PostedPropertyEntity::class,
+        RentalAgreementEntity::class,
+        WalletTransactionEntity::class
+    ],
+    version = 2,
     exportSchema = false
 )
 abstract class HavenDatabase : RoomDatabase() {
@@ -23,7 +29,9 @@ abstract class HavenDatabase : RoomDatabase() {
                     context.applicationContext,
                     HavenDatabase::class.java,
                     "haven_estate_db"
-                ).build()
+                )
+                .fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 instance
             }

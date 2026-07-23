@@ -25,4 +25,28 @@ interface RealEstateDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInquiry(inquiry: InquiryEntity)
+
+    // Posted Properties
+    @Query("SELECT * FROM posted_properties ORDER BY timestamp DESC")
+    fun getAllPostedProperties(): Flow<List<PostedPropertyEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPostedProperty(property: PostedPropertyEntity)
+
+    @Query("DELETE FROM posted_properties WHERE id = :id")
+    suspend fun deletePostedProperty(id: String)
+
+    // Rental Agreements
+    @Query("SELECT * FROM rental_agreements ORDER BY timestamp DESC")
+    fun getAllRentalAgreements(): Flow<List<RentalAgreementEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRentalAgreement(agreement: RentalAgreementEntity)
+
+    // Wallet Transactions
+    @Query("SELECT * FROM wallet_transactions ORDER BY timestamp DESC")
+    fun getAllWalletTransactions(): Flow<List<WalletTransactionEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWalletTransaction(transaction: WalletTransactionEntity)
 }

@@ -47,6 +47,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +64,7 @@ import coil.compose.AsyncImage
 import com.example.domain.model.MortgageCalculation
 import com.example.domain.model.Property
 import com.example.presentation.ui.components.ImageCarousel
+import com.example.presentation.ui.components.OtpVerificationDialog
 import com.example.presentation.ui.components.VerifiedBadge
 import com.example.ui.theme.ChampagneGold
 import com.example.ui.theme.SlateDark
@@ -83,6 +88,16 @@ fun PropertyDetailScreen(
     val context = LocalContext.current
     val agent = property.agent
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US).apply { maximumFractionDigits = 0 }
+    var showOtpDialog by remember { mutableStateOf(false) }
+
+    if (showOtpDialog) {
+        OtpVerificationDialog(
+            agent = agent,
+            propertyTitle = property.title,
+            onDismiss = { showOtpDialog = false },
+            onVerifiedSuccess = { phone -> }
+        )
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -117,7 +132,7 @@ fun PropertyDetailScreen(
                     }
 
                     Button(
-                        onClick = { onContactAgentClick(property) },
+                        onClick = { showOtpDialog = true },
                         modifier = Modifier
                             .weight(1.5f)
                             .height(50.dp),
@@ -125,7 +140,7 @@ fun PropertyDetailScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
                     ) {
                         Text(
-                            text = "Contact Agent",
+                            text = "Contact Agent (OTP)",
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
@@ -341,7 +356,136 @@ fun PropertyDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Quick Square Yards Mortgage Widget
+                // Localized Price Trends Section (99acres feature)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Price Trends (${property.city})",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SlateDark
+                                )
+                                Text(
+                                    text = "+12.4% Avg YoY Appreciation",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF10B981)
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(Color(0xFFECFDF5))
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text("High Demand", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF047857))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Custom Canvas Trend Line
+                        androidx.compose.foundation.Canvas(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .background(Color(0xFFF8FAFC), RoundedCornerShape(12.dp))
+                                .padding(12.dp)
+                        ) {
+                            val w = size.width
+                            val h = size.height
+                            val path = androidx.compose.ui.graphics.Path().apply {
+                                moveTo(0f, h * 0.8f)
+                                cubicTo(w * 0.3f, h * 0.7f, w * 0.6f, h * 0.3f, w, h * 0.1f)
+                            }
+                            drawPath(
+                                path = path,
+                                color = androidx.compose.ui.graphics.Color(0xFF0284C7),
+                                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 6f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Q1: $1,120/sqft", fontSize = 10.sp, color = Color(0xFF64748B))
+                            Text("Q2: $1,210/sqft", fontSize = 10.sp, color = Color(0xFF64748B))
+                            Text("Q3: $1,340/sqft", fontSize = 10.sp, color = Color(0xFF64748B))
+                            Text("Q4: $1,450/sqft", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = SlateDark)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Resident Ratings & Reviews
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Locality Ratings & Resident Reviews",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = SlateDark
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("Connectivity", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text("4.8 ★", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = SlateDark)
+                            }
+                            Column {
+                                Text("Safety", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text("4.9 ★", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = SlateDark)
+                            }
+                            Column {
+                                Text("Environment", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text("4.7 ★", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = SlateDark)
+                            }
+                            Column {
+                                Text("Overall", fontSize = 11.sp, color = Color(0xFF64748B))
+                                Text("4.8 ★", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFFD97706))
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFFF1F5F9), RoundedCornerShape(12.dp))
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = "\"Extremely peaceful neighborhood, 5 mins from expressway & top international schools.\"",
+                                fontSize = 12.sp,
+                                color = Color(0xFF334155),
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            )
+                        }
+                    }
+                }
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()

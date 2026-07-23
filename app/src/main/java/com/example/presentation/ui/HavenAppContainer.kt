@@ -31,13 +31,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.domain.model.UserRole
 import com.example.presentation.navigation.NavRoute
 import com.example.presentation.ui.components.FilterBottomSheet
 import com.example.presentation.ui.components.LeadInquiryBottomSheet
 import com.example.presentation.ui.components.MortgageCalculatorSection
+import com.example.presentation.ui.components.UserRoleSelector
+import com.example.presentation.ui.screens.DealerConsoleScreen
 import com.example.presentation.ui.screens.FavoritesScreen
 import com.example.presentation.ui.screens.InquiryHistoryScreen
+import com.example.presentation.ui.screens.OwnerDashboardScreen
+import com.example.presentation.ui.screens.PostPropertyScreen
 import com.example.presentation.ui.screens.PropertyDetailScreen
+import com.example.presentation.ui.screens.RentalAgreementScreen
 import com.example.presentation.ui.screens.SearchMapListScreen
 import com.example.presentation.viewmodel.MainViewModel
 import com.example.ui.theme.ChampagneGold
@@ -69,9 +75,28 @@ fun HavenAppContainer(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        topBar = {
+            if (currentRoute != NavRoute.PropertyDetail.route &&
+                currentRoute != NavRoute.PostProperty.route &&
+                currentRoute != NavRoute.OwnerDashboard.route &&
+                currentRoute != NavRoute.DealerConsole.route
+            ) {
+                UserRoleSelector(
+                    selectedRole = uiState.selectedUserRole,
+                    onRoleSelected = { role ->
+                        mainViewModel.setUserRole(role)
+                        when (role) {
+                            UserRole.BUYER_TENANT -> navController.navigate(NavRoute.Search.route)
+                            UserRole.INDIVIDUAL_OWNER -> navController.navigate(NavRoute.OwnerDashboard.route)
+                            UserRole.BROKER_DEALER -> navController.navigate(NavRoute.DealerConsole.route)
+                        }
+                    }
+                )
+            }
+        },
         bottomBar = {
             // Show Bottom Navigation on main tabs
-            if (currentRoute != NavRoute.PropertyDetail.route) {
+            if (currentRoute != NavRoute.PropertyDetail.route && currentRoute != NavRoute.PostProperty.route) {
                 NavigationBar(
                     containerColor = Color.White,
                     tonalElevation = 4.dp
@@ -97,16 +122,36 @@ fun HavenAppContainer(
                     )
 
                     NavigationBarItem(
-                        selected = currentRoute == NavRoute.MortgageCalculator.route,
+                        selected = currentRoute == NavRoute.OwnerDashboard.route || currentRoute == NavRoute.DealerConsole.route,
                         onClick = {
-                            navController.navigate(NavRoute.MortgageCalculator.route) {
-                                popUpTo(NavRoute.Search.route) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
+                            if (uiState.selectedUserRole == UserRole.BROKER_DEALER) {
+                                navController.navigate(NavRoute.DealerConsole.route)
+                            } else {
+                                navController.navigate(NavRoute.OwnerDashboard.route)
                             }
                         },
-                        icon = { Icon(Icons.Default.AccountBalance, contentDescription = "Mortgage") },
-                        label = { Text("Mortgage", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                        icon = { Icon(Icons.Default.AccountBalance, contentDescription = "Dashboard") },
+                        label = {
+                            Text(
+                                if (uiState.selectedUserRole == UserRole.BROKER_DEALER) "Dealer Console" else "My Listings",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = SlateDark,
+                            selectedTextColor = SlateDark,
+                            indicatorColor = Color(0xFFF1F5F9),
+                            unselectedIconColor = Color(0xFF94A3B8),
+                            unselectedTextColor = Color(0xFF94A3B8)
+                        )
+                    )
+
+                    NavigationBarItem(
+                        selected = currentRoute == NavRoute.RentalAgreement.route,
+                        onClick = { navController.navigate(NavRoute.RentalAgreement.route) },
+                        icon = { Icon(Icons.Default.Assignment, contentDescription = "Agreements") },
+                        label = { Text("Agreements", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = SlateDark,
                             selectedTextColor = SlateDark,
@@ -135,26 +180,6 @@ fun HavenAppContainer(
                             unselectedTextColor = Color(0xFF94A3B8)
                         )
                     )
-
-                    NavigationBarItem(
-                        selected = currentRoute == NavRoute.Inquiries.route,
-                        onClick = {
-                            navController.navigate(NavRoute.Inquiries.route) {
-                                popUpTo(NavRoute.Search.route) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.Assignment, contentDescription = "Inquiries") },
-                        label = { Text("Inquiries", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = SlateDark,
-                            selectedTextColor = SlateDark,
-                            indicatorColor = Color(0xFFF1F5F9),
-                            unselectedIconColor = Color(0xFF94A3B8),
-                            unselectedTextColor = Color(0xFF94A3B8)
-                        )
-                    )
                 }
             }
         }
@@ -168,6 +193,7 @@ fun HavenAppContainer(
                 SearchMapListScreen(
                     uiState = uiState,
                     onSearchQueryChanged = mainViewModel::onSearchQueryChanged,
+                    onCategoryTabSelected = mainViewModel::onCategoryTabSelected,
                     onCitySelected = mainViewModel::onCitySelected,
                     onVerifiedOnlyToggled = mainViewModel::onVerifiedOnlyToggled,
                     onSearchModeChanged = mainViewModel::setSearchMode,
@@ -181,6 +207,49 @@ fun HavenAppContainer(
                     onContactAgentClick = { prop ->
                         mainViewModel.openContactSheet(prop)
                     }
+                )
+            }
+
+            composable(NavRoute.OwnerDashboard.route) {
+                OwnerDashboardScreen(
+                    postedProperties = uiState.postedProperties,
+                    inquiries = uiState.inquiryHistory,
+                    onOpenPostProperty = { navController.navigate(NavRoute.PostProperty.route) },
+                    onDeleteProperty = mainViewModel::deletePostedProperty,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoute.DealerConsole.route) {
+                DealerConsoleScreen(
+                    walletBalance = uiState.walletBalance,
+                    walletTransactions = uiState.walletTransactions,
+                    onAddCredits = { desc, creds, type ->
+                        mainViewModel.addWalletCredits(desc, creds, type)
+                    },
+                    onOpenPostProperty = { navController.navigate(NavRoute.PostProperty.route) },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoute.PostProperty.route) {
+                PostPropertyScreen(
+                    userType = uiState.selectedUserRole.title,
+                    onPropertySubmitted = { prop ->
+                        mainViewModel.postProperty(prop)
+                        navController.navigate(NavRoute.OwnerDashboard.route) {
+                            popUpTo(NavRoute.Search.route)
+                        }
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoute.RentalAgreement.route) {
+                RentalAgreementScreen(
+                    savedAgreements = uiState.savedAgreements,
+                    onSaveAgreement = mainViewModel::saveRentalAgreement,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 

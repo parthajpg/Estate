@@ -66,6 +66,7 @@ import com.example.ui.theme.TextMuted
 fun SearchMapListScreen(
     uiState: UiState,
     onSearchQueryChanged: (String) -> Unit,
+    onCategoryTabSelected: (String) -> Unit = {},
     onCitySelected: (String) -> Unit,
     onVerifiedOnlyToggled: (Boolean) -> Unit,
     onSearchModeChanged: (SearchMode) -> Unit,
@@ -77,6 +78,7 @@ fun SearchMapListScreen(
     modifier: Modifier = Modifier
 ) {
     val popularCities = listOf("All Cities", "Malibu", "New York", "Miami", "Aspen", "London", "Dubai")
+    val categoryTabs = listOf("Buy", "Rent", "Commercial", "New Projects")
 
     Column(
         modifier = modifier
@@ -144,6 +146,32 @@ fun SearchMapListScreen(
                             imageVector = Icons.Default.FilterList,
                             contentDescription = "Filters",
                             tint = SlateDark
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Category Selection Tabs (Buy, Rent, Commercial, New Projects)
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items(categoryTabs) { category ->
+                    val isSelected = uiState.filterState.categoryTab.equals(category, ignoreCase = true)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isSelected) SlateDark else Color(0xFFF1F5F9))
+                            .clickable { onCategoryTabSelected(category) }
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = category,
+                            color = if (isSelected) Color.White else Color(0xFF475569),
+                            fontSize = 12.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                         )
                     }
                 }

@@ -2,14 +2,20 @@ package com.example.data.repository
 
 import com.example.data.local.FavoriteEntity
 import com.example.data.local.InquiryEntity
+import com.example.data.local.PostedPropertyEntity
 import com.example.data.local.RealEstateDao
+import com.example.data.local.RentalAgreementEntity
+import com.example.data.local.WalletTransactionEntity
 import com.example.domain.model.Agent
 import com.example.domain.model.FilterState
 import com.example.domain.model.Inquiry
 import com.example.domain.model.MortgageCalculation
+import com.example.domain.model.PostedProperty
 import com.example.domain.model.Property
 import com.example.domain.model.PropertyType
+import com.example.domain.model.RentalAgreement
 import com.example.domain.model.SortOption
+import com.example.domain.model.WalletTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -212,11 +218,61 @@ class PropertyRepository(private val dao: RealEstateDao) {
     )
 
     fun getPropertiesStream(filterState: FilterState): Flow<List<Property>> {
-        return dao.getAllFavoriteIds().map { favoriteIds ->
-            val set = favoriteIds.toSet()
-            sampleProperties.map { prop ->
-                prop.copy(isFavorite = set.contains(prop.id))
-            }.filter { prop ->
+        return combine(
+            dao.getAllFavoriteIds(),
+            dao.getAllPostedProperties()
+        ) { favoriteIds, postedEntities ->
+            val favSet = favoriteIds.toSet()
+            
+            val convertedPostedProps = postedEntities.map { entity ->
+                Property(
+                    id = entity.id,
+                    title = entity.title,
+                    tagline = entity.tagline,
+                    priceFormatted = entity.priceFormatted,
+                    priceRaw = entity.priceOrRent,
+                    location = "${entity.locality}, ${entity.city}",
+                    city = entity.city,
+                    neighborhood = entity.locality,
+                    bhk = entity.bhk,
+                    bathrooms = entity.bathrooms,
+                    areaSqFt = entity.carpetAreaSqFt,
+                    isVerified = entity.isVerified,
+                    isFeatured = true,
+                    type = if (entity.category.contains("Rent", ignoreCase = true)) PropertyType.APARTMENT else PropertyType.VILLA,
+                    images = listOf(entity.imageUrl.ifEmpty { "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80" }),
+                    latitude = 34.0259,
+                    longitude = -118.7798,
+                    description = entity.description,
+                    amenities = listOf("Security 24/7", "Power Backup", "Parking", "Water Supply", "Gym"),
+                    agent = Agent(
+                        name = entity.ownerName,
+                        role = entity.ownerType,
+                        agency = "Haven ${entity.ownerType}",
+                        phone = entity.ownerPhone,
+                        whatsappNumber = entity.ownerPhone.replace("+", "").replace(" ", "").replace("-", ""),
+                        email = entity.ownerEmail,
+                        rating = 4.9f,
+                        verifiedTransactions = 12,
+                        avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
+                    ),
+                    isFavorite = favSet.contains(entity.id)
+                )
+            }
+
+            val allProps = convertedPostedProps + sampleProperties.map { prop ->
+                prop.copy(isFavorite = favSet.contains(prop.id))
+            }
+
+            allProps.filter { prop ->
+                // Category Filter ("Buy", "Rent", "Commercial", "New Projects")
+                val matchesCategory = when (filterState.categoryTab) {
+                    "Rent" -> prop.type == PropertyType.APARTMENT || prop.priceFormatted.contains("mo", ignoreCase = true) || prop.id.startsWith("post_")
+                    "Commercial" -> prop.type == PropertyType.PENTHOUSE || prop.type == PropertyType.TOWNHOUSE
+                    "New Projects" -> prop.isVerified && prop.isFeatured
+                    else -> true // "Buy"
+                }
+
                 // Query Filter
                 val matchesQuery = filterState.query.isEmpty() ||
                         prop.title.contains(filterState.query, ignoreCase = true) ||
@@ -240,7 +296,7 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 val matchesType = filterState.selectedPropertyType == PropertyType.ALL ||
                         prop.type == filterState.selectedPropertyType
 
-                matchesQuery && matchesCity && matchesPrice && matchesBhk && matchesVerified && matchesType
+                matchesCategory && matchesQuery && matchesCity && matchesPrice && matchesBhk && matchesVerified && matchesType
             }.sortedWith { a, b ->
                 when (filterState.sortBy) {
                     SortOption.FEATURED -> b.isFeatured.compareTo(a.isFeatured)
@@ -250,6 +306,146 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 }
             }
         }
+    }
+
+    suspend fun postProperty(posted: PostedProperty) {
+        dao.insertPostedProperty(
+            PostedPropertyEntity(
+                id = posted.id,
+                title = posted.title,
+                tagline = posted.tagline,
+                category = posted.category,
+                city = posted.city,
+                locality = posted.locality,
+                towerHouseNo = posted.towerHouseNo,
+                bhk = posted.bhk,
+                carpetAreaSqFt = posted.carpetAreaSqFt,
+                bathrooms = posted.bathrooms,
+                furnishing = posted.furnishing,
+                priceOrRent = posted.priceOrRent,
+                priceFormatted = posted.priceFormatted,
+                description = posted.description,
+                imageUrl = posted.imageUrl,
+                ownerType = posted.ownerType,
+                ownerName = posted.ownerName,
+                ownerPhone = posted.ownerPhone,
+                ownerEmail = posted.ownerEmail,
+                isVerified = posted.isVerified,
+                constructionStatus = posted.constructionStatus,
+                timestamp = posted.timestamp
+            )
+        )
+    }
+
+    fun getPostedPropertiesStream(): Flow<List<PostedProperty>> {
+        return dao.getAllPostedProperties().map { list ->
+            list.map { entity ->
+                PostedProperty(
+                    id = entity.id,
+                    title = entity.title,
+                    tagline = entity.tagline,
+                    category = entity.category,
+                    city = entity.city,
+                    locality = entity.locality,
+                    towerHouseNo = entity.towerHouseNo,
+                    bhk = entity.bhk,
+                    carpetAreaSqFt = entity.carpetAreaSqFt,
+                    bathrooms = entity.bathrooms,
+                    furnishing = entity.furnishing,
+                    priceOrRent = entity.priceOrRent,
+                    priceFormatted = entity.priceFormatted,
+                    description = entity.description,
+                    imageUrl = entity.imageUrl,
+                    ownerType = entity.ownerType,
+                    ownerName = entity.ownerName,
+                    ownerPhone = entity.ownerPhone,
+                    ownerEmail = entity.ownerEmail,
+                    isVerified = entity.isVerified,
+                    constructionStatus = entity.constructionStatus,
+                    timestamp = entity.timestamp
+                )
+            }
+        }
+    }
+
+    suspend fun deletePostedProperty(id: String) {
+        dao.deletePostedProperty(id)
+    }
+
+    // Rental Agreement Generator
+    suspend fun saveRentalAgreement(agreement: RentalAgreement) {
+        dao.insertRentalAgreement(
+            RentalAgreementEntity(
+                agreementNumber = agreement.agreementNumber,
+                tenantName = agreement.tenantName,
+                landlordName = agreement.landlordName,
+                propertyAddress = agreement.propertyAddress,
+                city = agreement.city,
+                monthlyRent = agreement.monthlyRent,
+                securityDeposit = agreement.securityDeposit,
+                agreementTermMonths = agreement.agreementTermMonths,
+                startDate = agreement.startDate,
+                lockInPeriodMonths = agreement.lockInPeriodMonths,
+                stampDutyPaidAmount = agreement.stampDutyPaidAmount,
+                status = agreement.status,
+                timestamp = agreement.timestamp
+            )
+        )
+    }
+
+    fun getRentalAgreementsStream(): Flow<List<RentalAgreement>> {
+        return dao.getAllRentalAgreements().map { list ->
+            list.map { entity ->
+                RentalAgreement(
+                    id = entity.id,
+                    agreementNumber = entity.agreementNumber,
+                    tenantName = entity.tenantName,
+                    landlordName = entity.landlordName,
+                    propertyAddress = entity.propertyAddress,
+                    city = entity.city,
+                    monthlyRent = entity.monthlyRent,
+                    securityDeposit = entity.securityDeposit,
+                    agreementTermMonths = entity.agreementTermMonths,
+                    startDate = entity.startDate,
+                    lockInPeriodMonths = entity.lockInPeriodMonths,
+                    stampDutyPaidAmount = entity.stampDutyPaidAmount,
+                    status = entity.status,
+                    timestamp = entity.timestamp
+                )
+            }
+        }
+    }
+
+    // Wallet & Credits
+    fun getWalletTransactionsStream(): Flow<List<WalletTransaction>> {
+        return dao.getAllWalletTransactions().map { list ->
+            list.map { entity ->
+                WalletTransaction(
+                    id = entity.id,
+                    description = entity.description,
+                    creditsDelta = entity.creditsDelta,
+                    type = entity.type,
+                    timestamp = entity.timestamp
+                )
+            }
+        }
+    }
+
+    fun getWalletBalanceStream(): Flow<Int> {
+        return dao.getAllWalletTransactions().map { list ->
+            val base = 250 // Initial free credits for Dealer
+            base + list.sumOf { it.creditsDelta }
+        }
+    }
+
+    suspend fun addWalletCredits(description: String, credits: Int, type: String) {
+        dao.insertWalletTransaction(
+            WalletTransactionEntity(
+                description = description,
+                creditsDelta = credits,
+                type = type
+            )
+        )
     }
 
     fun getFavoritePropertiesStream(): Flow<List<Property>> {
