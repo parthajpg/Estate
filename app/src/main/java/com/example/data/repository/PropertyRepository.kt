@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import com.example.data.remote.CloudSyncManager
 import com.example.data.local.FavoriteEntity
 import com.example.data.local.InquiryEntity
 import com.example.data.local.PostedPropertyEntity
@@ -21,7 +22,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlin.math.pow
 
-class PropertyRepository(private val dao: RealEstateDao) {
+class PropertyRepository(
+    private val dao: RealEstateDao,
+    private val cloudSyncManager: CloudSyncManager = CloudSyncManager()
+) {
 
     private val sampleAgents = listOf(
         Agent(
@@ -220,8 +224,9 @@ class PropertyRepository(private val dao: RealEstateDao) {
     fun getPropertiesStream(filterState: FilterState): Flow<List<Property>> {
         return combine(
             dao.getAllFavoriteIds(),
-            dao.getAllPostedProperties()
-        ) { favoriteIds, postedEntities ->
+            dao.getAllPostedProperties(),
+            cloudSyncManager.observeCloudProperties()
+        ) { favoriteIds, postedEntities, cloudProperties ->
             val favSet = favoriteIds.toSet()
             
             val convertedPostedProps = postedEntities.map { entity ->
@@ -260,7 +265,45 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 )
             }
 
-            val allProps = convertedPostedProps + sampleProperties.map { prop ->
+            val convertedCloudProps = cloudProperties
+                .filter { cloudProp -> postedEntities.none { it.id == cloudProp.id } }
+                .map { cloudProp ->
+                    Property(
+                        id = cloudProp.id,
+                        title = cloudProp.title,
+                        tagline = cloudProp.tagline,
+                        priceFormatted = cloudProp.priceFormatted,
+                        priceRaw = cloudProp.priceOrRent,
+                        location = "${cloudProp.locality}, ${cloudProp.city}",
+                        city = cloudProp.city,
+                        neighborhood = cloudProp.locality,
+                        bhk = cloudProp.bhk,
+                        bathrooms = cloudProp.bathrooms,
+                        areaSqFt = cloudProp.carpetAreaSqFt,
+                        isVerified = cloudProp.isVerified,
+                        isFeatured = true,
+                        type = if (cloudProp.category.contains("Rent", ignoreCase = true)) PropertyType.APARTMENT else PropertyType.VILLA,
+                        images = listOf(cloudProp.imageUrl.ifEmpty { "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80" }),
+                        latitude = 34.0259,
+                        longitude = -118.7798,
+                        description = cloudProp.description,
+                        amenities = listOf("Security 24/7", "Power Backup", "Parking", "Water Supply", "Gym"),
+                        agent = Agent(
+                            name = cloudProp.ownerName,
+                            role = cloudProp.ownerType,
+                            agency = "Yohes ${cloudProp.ownerType}",
+                            phone = cloudProp.ownerPhone,
+                            whatsappNumber = cloudProp.ownerPhone.replace("+", "").replace(" ", "").replace("-", ""),
+                            email = cloudProp.ownerEmail,
+                            rating = 4.9f,
+                            verifiedTransactions = 12,
+                            avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
+                        ),
+                        isFavorite = favSet.contains(cloudProp.id)
+                    )
+                }
+
+            val allProps = convertedPostedProps + convertedCloudProps + sampleProperties.map { prop ->
                 prop.copy(isFavorite = favSet.contains(prop.id))
             }
 
@@ -335,6 +378,8 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 timestamp = posted.timestamp
             )
         )
+        // Sync to Cloud DB (Firestore)
+        cloudSyncManager.syncPostedPropertyToCloud(posted)
     }
 
     fun getPostedPropertiesStream(): Flow<List<PostedProperty>> {
@@ -391,6 +436,8 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 timestamp = agreement.timestamp
             )
         )
+        // Sync to Cloud DB (Firestore)
+        cloudSyncManager.syncRentalAgreementToCloud(agreement)
     }
 
     fun getRentalAgreementsStream(): Flow<List<RentalAgreement>> {
@@ -476,6 +523,8 @@ class PropertyRepository(private val dao: RealEstateDao) {
                 preferredTime = inquiry.preferredTime
             )
         )
+        // Sync to Cloud DB (Firestore)
+        cloudSyncManager.syncInquiryToCloud(inquiry)
     }
 
     fun getAllInquiriesStream(): Flow<List<Inquiry>> {
