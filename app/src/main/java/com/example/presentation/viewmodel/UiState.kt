@@ -34,5 +34,7 @@ data class UiState(
     val favoriteProperties: List<Property> = emptyList(),
     val inquiryHistory: List<Inquiry> = emptyList(),
     val isSubmittingInquiry: Boolean = false,
-    val inquirySuccessToast: String? = null
+    val inquirySuccessToast: String? = null,
+    val isPhoneVerified: Boolean = false,
+    val verifiedPhoneNumber: String = ""
 )

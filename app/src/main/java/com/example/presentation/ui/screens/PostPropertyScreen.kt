@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.PostedProperty
+import com.example.presentation.ui.components.ImagePickerSection
 import com.example.ui.theme.SlateDark
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +78,14 @@ fun PostPropertyScreen(
     var ownerName by remember { mutableStateOf("Alexander Wright") }
     var ownerPhone by remember { mutableStateOf("+1 (212) 555-0199") }
     var ownerEmail = "alexander.wright@havenestate.com"
+    var uploadedPhotos by remember {
+        mutableStateOf(
+            listOf(
+                "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80",
+                "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1000&q=80"
+            )
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -323,6 +332,13 @@ fun PostPropertyScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 )
 
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                ImagePickerSection(
+                                    imageUris = uploadedPhotos,
+                                    onImagesChanged = { uploadedPhotos = it }
+                                )
+
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Button(
                                         onClick = { step = 2 },
@@ -399,7 +415,7 @@ fun PostPropertyScreen(
                                             priceOrRent = numericVal,
                                             priceFormatted = formattedPrice,
                                             description = "Newly listed property posted via Haven $userType Console.",
-                                            imageUrl = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80",
+                                            imageUrl = uploadedPhotos.firstOrNull() ?: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80",
                                             ownerType = userType,
                                             ownerName = ownerName,
                                             ownerPhone = ownerPhone,

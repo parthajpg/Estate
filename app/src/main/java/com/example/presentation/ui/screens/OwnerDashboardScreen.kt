@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.Inquiry
 import com.example.domain.model.PostedProperty
+import com.example.presentation.ui.components.PaymentGatewaySheet
+import com.example.presentation.ui.components.PhoneOtpSheet
 import com.example.ui.theme.SlateDark
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,6 +68,33 @@ fun OwnerDashboardScreen(
     onBackClick: () -> Unit
 ) {
     var leadSortBy by remember { mutableStateOf("LATEST") } // "LATEST" or "HIGHEST_SCORE"
+    var showPhoneOtpSheet by remember { mutableStateOf(false) }
+    var showPaymentSheet by remember { mutableStateOf(false) }
+    var isPhoneVerified by remember { mutableStateOf(false) }
+    var isVerifiedBadgeUnlocked by remember { mutableStateOf(false) }
+
+    if (showPhoneOtpSheet) {
+        PhoneOtpSheet(
+            title = "Owner Phone Verification",
+            subtitle = "Verify your phone number to receive instant SMS alerts for new tenant leads",
+            onDismiss = { showPhoneOtpSheet = false },
+            onVerifiedSuccess = {
+                isPhoneVerified = true
+            }
+        )
+    }
+
+    if (showPaymentSheet) {
+        PaymentGatewaySheet(
+            amount = 49.0,
+            purpose = "Upgrade to Verified Owner Badge & Top Search Placement",
+            walletBalance = 250,
+            onDismiss = { showPaymentSheet = false },
+            onPaymentSuccess = { txnId, method ->
+                isVerifiedBadgeUnlocked = true
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -132,6 +161,77 @@ fun OwnerDashboardScreen(
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text("Total Buyer Leads", fontSize = 11.sp, color = Color(0xFF64748B))
                             Text("${inquiries.size + 3}", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = SlateDark)
+                        }
+                    }
+                }
+            }
+
+            // Quick Actions: Phone OTP & Boost Payment
+            item {
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = SlateDark),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (isVerifiedBadgeUnlocked) "Verified Owner Badge Active ✓" else "Boost Property & Get Verified Badge",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp
+                                )
+                                Text(
+                                    text = if (isPhoneVerified) "Phone: Verified ✓" else "Verify mobile via SMS OTP for lead notifications",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Button(
+                                onClick = { showPhoneOtpSheet = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isPhoneVerified) Color(0xFF10B981) else Color(0xFF334155),
+                                    contentColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(1f).height(44.dp)
+                            ) {
+                                Text(
+                                    text = if (isPhoneVerified) "Phone Verified ✓" else "Verify SMS OTP",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Button(
+                                onClick = { showPaymentSheet = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isVerifiedBadgeUnlocked) Color(0xFF10B981) else com.example.ui.theme.ChampagneGold,
+                                    contentColor = SlateDark
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.weight(1f).height(44.dp)
+                            ) {
+                                Text(
+                                    text = if (isVerifiedBadgeUnlocked) "Badge Unlocked ✓" else "Pay $49 Boost",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SlateDark
+                                )
+                            }
                         }
                     }
                 }

@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.RentalAgreement
+import com.example.presentation.ui.components.PaymentGatewaySheet
 import com.example.ui.theme.SlateDark
 import kotlinx.coroutines.launch
 
@@ -78,7 +79,21 @@ fun RentalAgreementScreen(
     var termMonths by remember { mutableStateOf("12") }
 
     var createdSuccessMsg by remember { mutableStateOf("") }
+    var agreementToPay by remember { mutableStateOf<RentalAgreement?>(null) }
     val scope = rememberCoroutineScope()
+
+    if (agreementToPay != null) {
+        val ag = agreementToPay!!
+        PaymentGatewaySheet(
+            amount = ag.securityDeposit + 50.0,
+            purpose = "Security Deposit & E-Stamp Fee (${ag.agreementNumber})",
+            walletBalance = 250,
+            onDismiss = { agreementToPay = null },
+            onPaymentSuccess = { txnId, method ->
+                createdSuccessMsg = "Payment of $${(ag.securityDeposit + 50).toInt()} via $method confirmed! Txn ID: $txnId"
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -410,6 +425,17 @@ fun RentalAgreementScreen(
                                         Text("Term", fontSize = 10.sp, color = Color(0xFF64748B))
                                         Text("${agreement.agreementTermMonths} Months", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                                     }
+                                }
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Button(
+                                    onClick = { agreementToPay = agreement },
+                                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                                ) {
+                                    Text("Pay Deposit & Stamp Fee Online", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 }
                             }
                         }

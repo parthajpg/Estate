@@ -66,6 +66,8 @@ import com.example.domain.model.MortgageCalculation
 import com.example.domain.model.Property
 import com.example.presentation.ui.components.ImageCarousel
 import com.example.presentation.ui.components.OtpVerificationDialog
+import com.example.presentation.ui.components.PaymentGatewaySheet
+import com.example.presentation.ui.components.PhoneOtpSheet
 import com.example.presentation.ui.components.VerifiedBadge
 import com.example.ui.theme.ChampagneGold
 import com.example.ui.theme.SlateDark
@@ -90,6 +92,8 @@ fun PropertyDetailScreen(
     val agent = property.agent
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US).apply { maximumFractionDigits = 0 }
     var showOtpDialog by remember { mutableStateOf(false) }
+    var showPhoneOtpSheet by remember { mutableStateOf(false) }
+    var showPaymentSheet by remember { mutableStateOf(false) }
 
     if (showOtpDialog) {
         OtpVerificationDialog(
@@ -97,6 +101,29 @@ fun PropertyDetailScreen(
             propertyTitle = property.title,
             onDismiss = { showOtpDialog = false },
             onVerifiedSuccess = { phone -> }
+        )
+    }
+
+    if (showPhoneOtpSheet) {
+        PhoneOtpSheet(
+            title = "Verify Mobile Phone Number",
+            subtitle = "Verify to connect directly with agent ${agent.name}",
+            onDismiss = { showPhoneOtpSheet = false },
+            onVerifiedSuccess = { verifiedPhone ->
+                showOtpDialog = true
+            }
+        )
+    }
+
+    if (showPaymentSheet) {
+        PaymentGatewaySheet(
+            amount = 500.0,
+            purpose = "Reserve Property Token Deposit",
+            walletBalance = 250,
+            onDismiss = { showPaymentSheet = false },
+            onPaymentSuccess = { txnId, method ->
+                // Handled
+            }
         )
     }
 
@@ -113,7 +140,7 @@ fun PropertyDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -126,18 +153,34 @@ fun PropertyDetailScreen(
                         )
                         Text(
                             text = property.priceFormatted,
-                            fontSize = 20.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
                     Button(
-                        onClick = { showOtpDialog = true },
+                        onClick = { showPaymentSheet = true },
                         modifier = Modifier
-                            .weight(1.5f)
-                            .height(50.dp),
-                        shape = RoundedCornerShape(14.dp),
+                            .weight(1.2f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = ChampagneGold, contentColor = SlateDark)
+                    ) {
+                        Text(
+                            text = "Reserve $500",
+                            color = SlateDark,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        onClick = { showPhoneOtpSheet = true },
+                        modifier = Modifier
+                            .weight(1.3f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
                         Icon(
@@ -146,11 +189,11 @@ fun PropertyDetailScreen(
                             tint = ChampagneGold,
                             modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Contact Agent",
                             color = Color.White,
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }

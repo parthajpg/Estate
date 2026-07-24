@@ -75,6 +75,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _interestRate = MutableStateFlow(6.5f)
     private val _tenureYears = MutableStateFlow(30)
     private val _inquirySuccessToast = MutableStateFlow<String?>(null)
+    private val _isPhoneVerified = MutableStateFlow(
+        sharedPreferences.getBoolean("key_phone_verified", false)
+    )
+    private val _verifiedPhoneNumber = MutableStateFlow(
+        sharedPreferences.getString("key_verified_phone", "") ?: ""
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _filteredProperties = _filterState.flatMapLatest { filter ->
@@ -160,7 +166,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             mortgageCalculation = mortgage,
             favoriteProperties = repoData.favorites,
             inquiryHistory = repoData.inquiries,
-            inquirySuccessToast = _inquirySuccessToast.value
+            inquirySuccessToast = _inquirySuccessToast.value,
+            isPhoneVerified = _isPhoneVerified.value,
+            verifiedPhoneNumber = _verifiedPhoneNumber.value
         )
     }.stateIn(
         scope = viewModelScope,
@@ -319,5 +327,44 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearInquiryToast() {
         _inquirySuccessToast.value = null
+    }
+
+    fun setPhoneVerified(phoneNumber: String) {
+        _isPhoneVerified.value = true
+        _verifiedPhoneNumber.value = phoneNumber
+        sharedPreferences.edit()
+            .putBoolean("key_phone_verified", true)
+            .putString("key_verified_phone", phoneNumber)
+            .apply()
+        _inquirySuccessToast.value = "Phone number $phoneNumber verified successfully!"
+    }
+
+    fun clearPhoneVerification() {
+        _isPhoneVerified.value = false
+        _verifiedPhoneNumber.value = ""
+        sharedPreferences.edit()
+            .putBoolean("key_phone_verified", false)
+            .putString("key_verified_phone", "")
+            .apply()
+    }
+
+    fun processGatewayPayment(
+        amount: Double,
+        purpose: String,
+        paymentMethod: String,
+        onComplete: (txnId: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val txnId = "TXN_${System.currentTimeMillis().toString().takeLast(8)}"
+            // Record in wallet / transaction history
+            val isExpense = paymentMethod != "Wallet Topup"
+            addWalletCredits(
+                description = "$purpose ($paymentMethod)",
+                credits = amount.toInt(),
+                type = if (isExpense) "Debit" else "Credit"
+            )
+            _inquirySuccessToast.value = "Payment of $${String.format("%,.2f", amount)} via $paymentMethod successful!"
+            onComplete(txnId)
+        }
     }
 }
