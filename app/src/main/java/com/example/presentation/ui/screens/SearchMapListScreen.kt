@@ -29,6 +29,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
+import com.example.presentation.ui.components.YohesGoldAccent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -185,58 +189,67 @@ fun SearchMapListScreen(
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text(
-                            text = "Sell With Us",
-                            color = Color.White.copy(alpha = 0.85f),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
+                        Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(Color.White.copy(alpha = 0.15f))
+                                .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
                                 .clickable { onOpenPostProperty() }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-
-                        Text(
-                            text = "For Agents",
-                            color = Color.White.copy(alpha = 0.85f),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .clickable { onOpenDealerConsole() }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-
-                        // Log In / Sign Up Button
-                        OutlinedButton(
-                            onClick = onOpenRoleSelector,
-                            shape = RoundedCornerShape(50.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.8f)),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                horizontal = 12.dp,
-                                vertical = 4.dp
-                            ),
-                            modifier = Modifier.height(34.dp)
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = when (uiState.selectedUserRole) {
-                                    UserRole.BUYER_TENANT -> "Log In / Sign Up"
-                                    UserRole.INDIVIDUAL_OWNER -> "Owner Logged In"
-                                    UserRole.BROKER_DEALER -> "Dealer Logged In"
-                                },
+                                text = "Sell",
+                                color = Color.White,
                                 fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                fontWeight = FontWeight.Bold
                             )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(Color.White.copy(alpha = 0.15f))
+                                .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+                                .clickable { onOpenDealerConsole() }
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = "Agents",
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        // Log In / Mode Switch Button
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(YohesGoldAccent)
+                                .clickable { onOpenRoleSelector() }
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = null,
+                                    tint = YohesBlueDark,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = when (uiState.selectedUserRole) {
+                                        UserRole.BUYER_TENANT -> "Log In"
+                                        UserRole.INDIVIDUAL_OWNER -> "Owner"
+                                        UserRole.BROKER_DEALER -> "Dealer"
+                                    },
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = YohesBlueDark
+                                )
+                            }
                         }
                     }
                 }
@@ -439,54 +452,92 @@ fun SearchMapListScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        value = uiState.filterState.query,
-                        onValueChange = onSearchQueryChanged,
-                        placeholder = { Text("Search location, mansion, villa or city", color = Color(0xFF64748B), fontSize = 13.sp) },
-                        leadingIcon = {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint = YohesBlueDark)
-                        },
-                        trailingIcon = {
-                            if (uiState.filterState.query.isNotEmpty()) {
-                                IconButton(onClick = { onSearchQueryChanged("") }) {
-                                    Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear", tint = Color(0xFF475569))
-                                }
+                    // Custom Groomed Luxury Search Bar
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFFF1F5F9))
+                            .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = YohesBlueDark,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Box(
+                            modifier = Modifier.weight(1f),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (uiState.filterState.query.isEmpty()) {
+                                Text(
+                                    text = "Search location, villa, city...",
+                                    color = Color(0xFF64748B),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    maxLines = 1
+                                )
                             }
-                        },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color(0xFFF1F5F9),
-                            unfocusedContainerColor = Color(0xFFF1F5F9),
-                            focusedBorderColor = YohesBlueDark,
-                            unfocusedBorderColor = Color(0xFFE2E8F0),
-                            focusedTextColor = SlateDark,
-                            unfocusedTextColor = SlateDark
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier.weight(1f)
-                    )
+                            BasicTextField(
+                                value = uiState.filterState.query,
+                                onValueChange = onSearchQueryChanged,
+                                singleLine = true,
+                                textStyle = TextStyle(
+                                    color = SlateDark,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                cursorBrush = SolidColor(YohesBlueDark),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        if (uiState.filterState.query.isNotEmpty()) {
+                            IconButton(
+                                onClick = { onSearchQueryChanged("") },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Clear",
+                                    tint = Color(0xFF475569),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    IconButton(
-                        onClick = onOpenFilterSheet,
+                    // Filter Button
+                    Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(14.dp))
                             .background(Color.White)
-                            .border(1.dp, Color(0xFFE2E8F0), CircleShape)
+                            .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(14.dp))
+                            .clickable { onOpenFilterSheet() },
+                        contentAlignment = Alignment.Center
                     ) {
                         BadgedBox(
                             badge = {
                                 if (uiState.filterState.verifiedOnly || uiState.filterState.selectedBhk.isNotEmpty() || uiState.filterState.selectedCity != "All Cities") {
-                                    Badge(containerColor = YohesBlueDark)
+                                    Badge(containerColor = YohesGoldAccent)
                                 }
                             }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
                                 contentDescription = "Filters",
-                                tint = YohesBlueDark
+                                tint = YohesBlueDark,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }

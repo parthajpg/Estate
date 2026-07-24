@@ -144,13 +144,13 @@ fun DealerConsoleScreen(
                 actions = {
                     Button(
                         onClick = onOpenPostProperty,
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(imageVector = Icons.Default.AddCircle, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Bulk Add", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Bulk Add", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
@@ -280,11 +280,11 @@ fun DealerConsoleScreen(
                                     verificationStatus = "Verification Pending Review"
                                     messageBanner = "Title deed & REA license documents submitted for audit!"
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF1F5F9)),
+                                colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                                 shape = RoundedCornerShape(12.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Upload Relationship / Ownership Document", color = SlateDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                Text("Upload Relationship / Ownership Document", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                             }
                         } else {
                             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -293,9 +293,9 @@ fun RentalAgreementScreen(
                                 },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                 shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                                colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                             ) {
-                                Text("Generate E-Stamped Agreement", fontWeight = FontWeight.Bold)
+                                Text("Generate E-Stamped Agreement", color = Color.White, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

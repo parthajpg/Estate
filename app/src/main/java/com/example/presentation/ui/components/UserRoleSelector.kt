@@ -63,7 +63,7 @@ fun UserRoleSelector(
             )
 
             val animatedTextColor by animateColorAsState(
-                targetValue = if (isSelected) Color.White else Color(0xFF475569),
+                targetValue = if (isSelected) Color.White else Color(0xFF1E293B),
                 animationSpec = tween(durationMillis = 250),
                 label = "roleTextColor"
             )

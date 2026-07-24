@@ -138,10 +138,17 @@ fun PropertyDetailScreen(
                             .weight(1.5f)
                             .height(50.dp),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = null,
+                            tint = ChampagneGold,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Contact Agent (OTP)",
+                            text = "Contact Agent",
                             color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold

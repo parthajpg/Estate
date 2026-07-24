@@ -264,7 +264,7 @@ fun PostPropertyScreen(
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Button(
                                         onClick = { step = 1 },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2E8F0)),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2E8F0), contentColor = SlateDark),
                                         shape = RoundedCornerShape(16.dp),
                                         modifier = Modifier.weight(1f).height(50.dp)
                                     ) {
@@ -273,11 +273,11 @@ fun PostPropertyScreen(
 
                                     Button(
                                         onClick = { step = 3 },
-                                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                                         shape = RoundedCornerShape(16.dp),
                                         modifier = Modifier.weight(1f).height(50.dp)
                                     ) {
-                                        Text("Next: Pricing", fontWeight = FontWeight.Bold)
+                                        Text("Next: Pricing", color = Color.White, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -326,7 +326,7 @@ fun PostPropertyScreen(
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Button(
                                         onClick = { step = 2 },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2E8F0)),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE2E8F0), contentColor = SlateDark),
                                         shape = RoundedCornerShape(16.dp),
                                         modifier = Modifier.weight(1f).height(50.dp)
                                     ) {
@@ -335,11 +335,11 @@ fun PostPropertyScreen(
 
                                     Button(
                                         onClick = { step = 4 },
-                                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                                         shape = RoundedCornerShape(16.dp),
                                         modifier = Modifier.weight(1f).height(50.dp)
                                     ) {
-                                        Text("Next: Review", fontWeight = FontWeight.Bold)
+                                        Text("Next: Review", color = Color.White, fontWeight = FontWeight.Bold)
                                     }
                                 }
                             }
@@ -410,9 +410,9 @@ fun PostPropertyScreen(
                                     },
                                     modifier = Modifier.fillMaxWidth().height(50.dp),
                                     shape = RoundedCornerShape(16.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                                 ) {
-                                    Text("Publish Property Now", fontWeight = FontWeight.Bold)
+                                    Text("Publish Property Now", color = Color.White, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }

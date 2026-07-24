@@ -84,13 +84,13 @@ fun OwnerDashboardScreen(
                 actions = {
                     Button(
                         onClick = onOpenPostProperty,
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                         shape = RoundedCornerShape(20.dp),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Post Property", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("Post Property", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
