@@ -323,7 +323,7 @@ fun FilterBottomSheet(
                     onClick = onDismiss,
                     modifier = Modifier.weight(1.5f),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                 ) {
                     Text(text = "Apply Filters", color = Color.White, fontWeight = FontWeight.Bold)
                 }

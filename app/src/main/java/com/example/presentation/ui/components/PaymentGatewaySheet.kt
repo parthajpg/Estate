@@ -338,9 +338,9 @@ fun PaymentGatewaySheet(
                         },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
-                        Text("Continue & Complete Action", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("Continue & Complete Action", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     }
                 }
             } else {
@@ -550,10 +550,11 @@ fun PaymentGatewaySheet(
                         .fillMaxWidth()
                         .height(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                 ) {
                     Text(
                         text = "Pay ${currencyFormatter.format(amount)} Now",
+                        color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )

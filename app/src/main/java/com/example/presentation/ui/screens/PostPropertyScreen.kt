@@ -201,9 +201,9 @@ fun PostPropertyScreen(
                                     onClick = { if (title.isNotBlank()) step = 2 },
                                     modifier = Modifier.fillMaxWidth().height(50.dp),
                                     shape = RoundedCornerShape(16.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                                 ) {
-                                    Text("Next: Property Configuration", fontWeight = FontWeight.Bold)
+                                    Text("Next: Property Configuration", color = Color.White, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }

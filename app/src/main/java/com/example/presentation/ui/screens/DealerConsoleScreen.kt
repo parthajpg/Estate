@@ -387,12 +387,12 @@ fun DealerConsoleScreen(
                                             messageBanner = "Insufficient credits. Please refill your wallet!"
                                         }
                                     },
-                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                                     shape = RoundedCornerShape(10.dp)
                                 ) {
-                                    Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(12.dp))
+                                    Icon(Icons.Default.Lock, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Unlock (-20 Credits)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Text("Unlock (-20 Credits)", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }

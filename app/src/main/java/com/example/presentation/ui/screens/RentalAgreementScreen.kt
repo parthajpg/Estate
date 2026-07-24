@@ -433,9 +433,9 @@ fun RentalAgreementScreen(
                                     onClick = { agreementToPay = agreement },
                                     modifier = Modifier.fillMaxWidth().height(42.dp),
                                     shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                                 ) {
-                                    Text("Pay Deposit & Stamp Fee Online", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    Text("Pay Deposit & Stamp Fee Online", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 }
                             }
                         }

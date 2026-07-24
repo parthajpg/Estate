@@ -150,9 +150,9 @@ fun OtpVerificationDialog(
                         },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
-                        Text("Send OTP Verification Code", fontWeight = FontWeight.Bold)
+                        Text("Send OTP Verification Code", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 } else if (step == 2) {
                     Text(
@@ -213,9 +213,9 @@ fun OtpVerificationDialog(
                         },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
-                        Text("Verify & Unlock Contact", fontWeight = FontWeight.Bold)
+                        Text("Verify & Unlock Contact", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     // Step 3: Verified Success
@@ -262,9 +262,9 @@ fun OtpVerificationDialog(
                         onClick = onDismiss,
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                        colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                     ) {
-                        Text("Done", fontWeight = FontWeight.Bold)
+                        Text("Done", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }

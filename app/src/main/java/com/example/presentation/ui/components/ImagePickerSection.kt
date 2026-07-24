@@ -182,13 +182,13 @@ fun ImagePickerSection(
             ) {
                 Button(
                     onClick = { galleryLauncher.launch("image/*") },
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.weight(1f).height(46.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(imageVector = Icons.Default.PhotoLibrary, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Select from Gallery", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("Select from Gallery", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
 
                 OutlinedButton(

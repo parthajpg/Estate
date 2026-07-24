@@ -282,7 +282,7 @@ fun LeadInquiryBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
             ) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Submit", tint = ChampagneGold)
                 Spacer(modifier = Modifier.width(8.dp))

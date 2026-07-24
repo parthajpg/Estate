@@ -271,9 +271,9 @@ fun PhoneOtpSheet(
                     },
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                 ) {
-                    Text("Send SMS Verification Code", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text("Send SMS Verification Code", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
             } else if (step == 2) {
                 // Step 2: 6-Digit OTP Box View
@@ -410,9 +410,9 @@ fun PhoneOtpSheet(
                     },
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                 ) {
-                    Text("Verify Phone Number", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text("Verify Phone Number", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
             } else {
                 // Step 3: Success Screen
@@ -442,9 +442,9 @@ fun PhoneOtpSheet(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = SlateDark, contentColor = Color.White)
                 ) {
-                    Text("Done", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text("Done", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
             }
         }
