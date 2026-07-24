@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,6 +74,18 @@ fun LeadInquiryBottomSheet(
     var email by remember { mutableStateOf("") }
     var preferredTime by remember { mutableStateOf("Weekend Afternoon") }
     var message by remember { mutableStateOf("Hi ${agent.name}, I am interested in viewing ${property.title} (${property.priceFormatted}). Please send availability.") }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = SlateDark,
+        unfocusedBorderColor = Color(0xFFCBD5E1),
+        focusedLabelColor = SlateDark,
+        unfocusedLabelColor = Color(0xFF64748B),
+        cursorColor = SlateDark,
+        focusedTextColor = SlateDark,
+        unfocusedTextColor = SlateDark,
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color(0xFFF8FAFC)
+    )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -235,7 +248,8 @@ fun LeadInquiryBottomSheet(
                 label = { Text("Your Full Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -246,7 +260,8 @@ fun LeadInquiryBottomSheet(
                 label = { Text("Phone Number") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -257,7 +272,8 @@ fun LeadInquiryBottomSheet(
                 label = { Text("Email Address") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -269,7 +285,8 @@ fun LeadInquiryBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 4,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(20.dp))

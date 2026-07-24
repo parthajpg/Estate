@@ -95,6 +95,18 @@ fun RentalAgreementScreen(
         )
     }
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = SlateDark,
+        unfocusedBorderColor = Color(0xFFCBD5E1),
+        focusedLabelColor = SlateDark,
+        unfocusedLabelColor = Color(0xFF64748B),
+        cursorColor = SlateDark,
+        focusedTextColor = SlateDark,
+        unfocusedTextColor = SlateDark,
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color(0xFFF8FAFC)
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -231,7 +243,8 @@ fun RentalAgreementScreen(
                                 label = { Text("Tenant Full Name") },
                                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = SlateDark) },
                                 singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = textFieldColors
                             )
 
                             OutlinedTextField(
@@ -240,7 +253,8 @@ fun RentalAgreementScreen(
                                 label = { Text("Landlord / Owner Full Name") },
                                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = SlateDark) },
                                 singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = textFieldColors
                             )
 
                             OutlinedTextField(
@@ -248,7 +262,8 @@ fun RentalAgreementScreen(
                                 onValueChange = { address = it },
                                 label = { Text("Property Address & Apartment No") },
                                 leadingIcon = { Icon(Icons.Default.HomeWork, contentDescription = null, tint = SlateDark) },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = textFieldColors
                             )
 
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -258,7 +273,8 @@ fun RentalAgreementScreen(
                                     label = { Text("Monthly Rent ($)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     singleLine = true,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -267,7 +283,8 @@ fun RentalAgreementScreen(
                                     label = { Text("Security Deposit ($)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     singleLine = true,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    colors = textFieldColors
                                 )
                             }
 
@@ -277,7 +294,8 @@ fun RentalAgreementScreen(
                                 label = { Text("Agreement Term (Months)") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = textFieldColors
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))

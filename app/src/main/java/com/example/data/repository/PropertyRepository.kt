@@ -29,34 +29,34 @@ class PropertyRepository(
 
     private val sampleAgents = listOf(
         Agent(
-            name = "Victoria Sterling",
+            name = "Siva",
             role = "Senior Luxury Director",
-            agency = "Sterling & Crest Real Estate",
+            agency = "Siva & Crest Real Estate",
             phone = "+1 (310) 892-4100",
             whatsappNumber = "+13108924100",
-            email = "victoria@sterlingcrest.com",
+            email = "siva@crest.com",
             rating = 4.9f,
             verifiedTransactions = 142,
             avatarUrl = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80"
         ),
         Agent(
-            name = "Julian Vance",
+            name = "ParthaSarathy",
             role = "Penthouse & Estate Specialist",
-            agency = "Vance Private Office",
+            agency = "Partha Private Office",
             phone = "+1 (212) 655-9080",
             whatsappNumber = "+12126559080",
-            email = "julian@vanceprivate.com",
+            email = "partha@parthaprivate.com",
             rating = 5.0f,
             verifiedTransactions = 98,
             avatarUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80"
         ),
         Agent(
-            name = "Elena Rostova",
+            name = "Siva Partha",
             role = "Waterfront Properties Advisor",
             agency = "Aura Luxury Properties",
             phone = "+1 (305) 441-2030",
             whatsappNumber = "+13054412030",
-            email = "elena@auraluxury.com",
+            email = "sivapartha@auraluxury.com",
             rating = 4.8f,
             verifiedTransactions = 115,
             avatarUrl = "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80"

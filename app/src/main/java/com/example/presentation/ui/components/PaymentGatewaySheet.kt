@@ -92,7 +92,7 @@ fun PaymentGatewaySheet(
     var cardNumber by remember { mutableStateOf("4532 •••• •••• 8892") }
     var cardExpiry by remember { mutableStateOf("08/28") }
     var cardCvv by remember { mutableStateOf("821") }
-    var cardHolder by remember { mutableStateOf("John Doe") }
+    var cardHolder by remember { mutableStateOf("Siva") }
 
     var selectedBank by remember { mutableStateOf("HDFC Bank") }
 

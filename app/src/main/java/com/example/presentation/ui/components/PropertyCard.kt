@@ -187,11 +187,11 @@ fun PropertyCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            color = Color(0xFFF8FAFC),
+                            color = Color(0xFFEFF6FF),  // Light blue-tinted background — clearly visible
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .border(1.dp, Color(0xFFF1F5F9), RoundedCornerShape(16.dp))
-                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                        .border(1.5.dp, Color(0xFFBFDBFE), RoundedCornerShape(16.dp))  // Stronger blue border
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -199,15 +199,15 @@ fun PropertyCard(
                         Icon(
                             imageVector = Icons.Default.Bed,
                             contentDescription = "Beds",
-                            tint = SlateDark,
-                            modifier = Modifier.size(16.dp)
+                            tint = Color(0xFF1E40AF),  // Strong blue, clearly visible
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${property.bhk} BHK",
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = Color(0xFF1E293B)  // Near-black, always readable
                         )
                     }
 
@@ -215,15 +215,15 @@ fun PropertyCard(
                         Icon(
                             imageVector = Icons.Default.Bathtub,
                             contentDescription = "Baths",
-                            tint = SlateDark,
-                            modifier = Modifier.size(16.dp)
+                            tint = Color(0xFF1E40AF),
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${property.bathrooms} Baths",
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = Color(0xFF1E293B)
                         )
                     }
 
@@ -231,15 +231,15 @@ fun PropertyCard(
                         Icon(
                             imageVector = Icons.Default.SquareFoot,
                             contentDescription = "SqFt",
-                            tint = SlateDark,
-                            modifier = Modifier.size(16.dp)
+                            tint = Color(0xFF1E40AF),
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "${property.areaSqFt} sq.ft",
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = Color(0xFF1E293B)
                         )
                     }
                 }

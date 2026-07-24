@@ -37,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,9 +76,9 @@ fun PostPropertyScreen(
     var furnishing by remember { mutableStateOf("Fully Furnished") }
 
     var priceOrRent by remember { mutableStateOf("1850000") }
-    var ownerName by remember { mutableStateOf("Alexander Wright") }
+    var ownerName by remember { mutableStateOf("Siva") }
     var ownerPhone by remember { mutableStateOf("+1 (212) 555-0199") }
-    var ownerEmail = "alexander.wright@havenestate.com"
+    var ownerEmail = "siva@havenestate.com"
     var uploadedPhotos by remember {
         mutableStateOf(
             listOf(
@@ -86,6 +87,18 @@ fun PostPropertyScreen(
             )
         )
     }
+
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = SlateDark,
+        unfocusedBorderColor = Color(0xFFCBD5E1),
+        focusedLabelColor = SlateDark,
+        unfocusedLabelColor = Color(0xFF64748B),
+        cursorColor = SlateDark,
+        focusedTextColor = SlateDark,
+        unfocusedTextColor = SlateDark,
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color(0xFFF8FAFC)
+    )
 
     Scaffold(
         topBar = {
@@ -172,7 +185,8 @@ fun PostPropertyScreen(
                                     label = { Text("Property Title") },
                                     placeholder = { Text("e.g. Modern Sunset Park Penthouse") },
                                     leadingIcon = { Icon(Icons.Default.HomeWork, contentDescription = null, tint = SlateDark) },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -180,21 +194,24 @@ fun PostPropertyScreen(
                                     onValueChange = { city = it },
                                     label = { Text("City") },
                                     leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = SlateDark) },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
                                     value = locality,
                                     onValueChange = { locality = it },
                                     label = { Text("Locality / Neighborhood") },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
                                     value = towerHouseNo,
                                     onValueChange = { towerHouseNo = it },
                                     label = { Text("Tower / Building / House No") },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 Button(
@@ -228,7 +245,8 @@ fun PostPropertyScreen(
                                     onValueChange = { bhk = it },
                                     label = { Text("Bedrooms (BHK)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -236,7 +254,8 @@ fun PostPropertyScreen(
                                     onValueChange = { carpetArea = it },
                                     label = { Text("Carpet Area (Sq.Ft.)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -244,7 +263,8 @@ fun PostPropertyScreen(
                                     onValueChange = { bathrooms = it },
                                     label = { Text("Bathrooms") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 Text("Furnishing Status", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
@@ -313,7 +333,8 @@ fun PostPropertyScreen(
                                     label = { Text(if (category == "Rent") "Expected Monthly Rent ($)" else "Expected Selling Price ($)") },
                                     leadingIcon = { Icon(Icons.Default.MonetizationOn, contentDescription = null, tint = SlateDark) },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -321,7 +342,8 @@ fun PostPropertyScreen(
                                     onValueChange = { ownerName = it },
                                     label = { Text("Contact Name") },
                                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = SlateDark) },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 OutlinedTextField(
@@ -329,7 +351,8 @@ fun PostPropertyScreen(
                                     onValueChange = { ownerPhone = it },
                                     label = { Text("Contact Phone") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = textFieldColors
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
