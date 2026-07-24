@@ -89,7 +89,7 @@ fun DealerConsoleScreen(
             listOf(
                 ScoredLead(
                     id = "lead_1",
-                    name = "David Vance",
+                    name = "Siva",
                     phoneMasked = "+1 (310) 8XX-XX19",
                     phoneUnmasked = "+1 (310) 892-4100",
                     propertyInterest = "Skyline Penthouse & Malibu Villa",
@@ -100,7 +100,7 @@ fun DealerConsoleScreen(
                 ),
                 ScoredLead(
                     id = "lead_2",
-                    name = "Claire Redfield",
+                    name = "ParthaSarathy",
                     phoneMasked = "+1 (212) 4XX-XX82",
                     phoneUnmasked = "+1 (212) 431-8822",
                     propertyInterest = "TriBeCa Loft / 4 BHK",
@@ -111,7 +111,7 @@ fun DealerConsoleScreen(
                 ),
                 ScoredLead(
                     id = "lead_3",
-                    name = "Leon Kennedy",
+                    name = "Siva Partha",
                     phoneMasked = "+1 (305) 9XX-XX04",
                     phoneUnmasked = "+1 (305) 912-3004",
                     propertyInterest = "Miami Waterfront Villa",

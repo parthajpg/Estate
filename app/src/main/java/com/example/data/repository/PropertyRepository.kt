@@ -37,7 +37,7 @@ class PropertyRepository(
             email = "siva@crest.com",
             rating = 4.9f,
             verifiedTransactions = 142,
-            avatarUrl = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80"
+            avatarUrl = "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80"
         ),
         Agent(
             name = "ParthaSarathy",
@@ -48,7 +48,7 @@ class PropertyRepository(
             email = "partha@parthaprivate.com",
             rating = 5.0f,
             verifiedTransactions = 98,
-            avatarUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80"
+            avatarUrl = "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80"
         ),
         Agent(
             name = "Siva Partha",
@@ -59,7 +59,7 @@ class PropertyRepository(
             email = "sivapartha@auraluxury.com",
             rating = 4.8f,
             verifiedTransactions = 115,
-            avatarUrl = "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80"
+            avatarUrl = "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80"
         )
     )
 
@@ -259,7 +259,7 @@ class PropertyRepository(
                         email = entity.ownerEmail,
                         rating = 4.9f,
                         verifiedTransactions = 12,
-                        avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
+                        avatarUrl = "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80"
                     ),
                     isFavorite = favSet.contains(entity.id)
                 )
@@ -297,7 +297,7 @@ class PropertyRepository(
                             email = cloudProp.ownerEmail,
                             rating = 4.9f,
                             verifiedTransactions = 12,
-                            avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
+                            avatarUrl = "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80"
                         ),
                         isFavorite = favSet.contains(cloudProp.id)
                     )
